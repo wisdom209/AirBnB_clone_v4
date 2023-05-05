@@ -52,10 +52,10 @@ $(document).ready(function () {
 
 	/* *************************************** */
 	/* handle http return status */
+
 	const statusElem = $('div#api_status')
 	let apiStatus = ""
 	$.get('http://0.0.0.0:5001/api/v1/status', (res) => {
-		console.log(res);
 		if (res.status === "OK") {
 			statusElem.addClass('available');
 			statusElem.removeAttr('id')
@@ -65,4 +65,49 @@ $(document).ready(function () {
 			statusElem.removeClass('available');
 		}
 	})
+
+
+	/* *************************************************** */
+	/* Handle places search */
+	let mydata = {}
+	$('SECTION.places').text("Loading . . .")
+	$.ajax({
+		type: 'POST',
+		url: 'http://0.0.0.0:5001/api/v1/places_search',
+		data: '{}',
+		contentType: 'application/json',
+		success: function (response) {
+			$('SECTION.places').text('')
+			response.forEach(element => {
+				let name = element.name;
+				let desc = element.description
+				let guests = element.max_guest ? `${element.max_guest} Guests` : `${element.max_guest} Guest`
+				let baths = element.number_bathrooms ? `${element.number_bathrooms} Bathrooms` : `${element.number_bathrooms} Bathroom`
+				let rooms = element.number_rooms ? `${element.number_rooms} Bedrooms` : `${element.number_rooms} Bedroom`
+				let price = `$${element.price_by_night}`
+
+				$('SECTION.places').append(`\
+					<article>
+					<div class="title_box">
+					<h2>${name}</h2>
+					<div class="price_by_night">${price}</div>
+					</div>
+					<div class="information">
+					<div class="max_guest">${guests}</div>
+					<div class="number_rooms">${rooms}</div>
+					<div class="number_bathrooms">${baths}</div>
+				    </div>
+					<div class="user">
+					<b>Owner:</b> John Doe
+					</div>
+					<div class="description">
+					${desc}
+					</div>
+					</article>`)
+			});
+		},
+		error: function (xhr, status, error) {
+			console.log(error)
+		}
+	});
 })
