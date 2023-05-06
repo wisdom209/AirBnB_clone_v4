@@ -1,50 +1,47 @@
 /* Jquery handling amenities checkbox */
-let checked_amenity_ids = [];
-let checked_amenity_names = []
+let checkedAmenityIds = [];
+let checkedAmenityNames = [];
 
 $(document).ready(function () {
-  const inputs = $('input[type="checkbox"]')
+  const inputs = $('input[type="checkbox"]');
 
   inputs.each(function (index, input) {
     $(this).on('change', (e) => {
-      const amenity_id = e.target.dataset.id;
-      const amenity_name = e.target.dataset.name;
+      const amenityId = e.target.dataset.id;
+      const amenityName = e.target.dataset.name;
 
       /* add amenities to list */
       if (e.target.value === 'on') {
-        if (!(checked_amenity_ids.includes(amenity_id))) {
-          checked_amenity_ids.push(amenity_id)
-          checked_amenity_names.push(amenity_name)
+        if (!(checkedAmenityIds.includes(amenityId))) {
+          checkedAmenityIds.push(amenityId);
+          checkedAmenityNames.push(amenityName);
         }
       }
       if (e.target.value === 'off') {
-        if (checked_amenity_ids.includes(amenity_id)) {
-          checked_amenity_ids = checked_amenity_ids.filter(value => value !== amenity_id)
-          checked_amenity_names = checked_amenity_names.filter(value => value !== amenity_name);
+        if (checkedAmenityIds.includes(amenityId)) {
+          checkedAmenityIds = checkedAmenityIds.filter(value => value !== amenityId);
+          checkedAmenityNames = checkedAmenityNames.filter(value => value !== amenityName);
         }
       }
 
       /* toggle checkbox values */
       if (e.target.value === 'on') {
-        e.target.value = 'off'
-      }
-      else {
-        e.target.value = 'on'
+        e.target.value = 'off';
+      } else {
+        e.target.value = 'on';
       }
 
       /* update h4 tag */
       $('.amenities h4').html('&nbsp;');
-      let amenityText = checked_amenity_names.join(', ');
-      if (checked_amenity_names.length === 0) {
+      let amenityText = checkedAmenityNames.join(', ');
+      if (checkedAmenityNames.length === 0) {
         $('.amenities h4').html('&nbsp;');
-      }
-      else if (amenityText.length > 17) {
+      } else if (amenityText.length > 17) {
         amenityText = amenityText.slice(0, 17) + '...';
         $('.amenities h4').text(amenityText);
-      }
-      else {
+      } else {
         $('.amenities h4').text(amenityText);
       }
-    })
+    });
   });
-})
+});
