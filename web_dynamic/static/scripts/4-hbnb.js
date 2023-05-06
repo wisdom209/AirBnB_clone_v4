@@ -81,9 +81,9 @@ $(document).ready(function () {
 			response.forEach(element => {
 				let name = element.name;
 				let desc = element.description
-				let guests = element.max_guest ? `${element.max_guest} Guests` : `${element.max_guest} Guest`
-				let baths = element.number_bathrooms ? `${element.number_bathrooms} Bathrooms` : `${element.number_bathrooms} Bathroom`
-				let rooms = element.number_rooms ? `${element.number_rooms} Bedrooms` : `${element.number_rooms} Bedroom`
+				let guests = element.max_guest !== 1 ? `${element.max_guest} Guests` : `${element.max_guest} Guest`
+				let baths = element.number_bathrooms !== 1 ? `${element.number_bathrooms} Bathrooms` : `${element.number_bathrooms} Bathroom`
+				let rooms = element.number_rooms !== 1 ? `${element.number_rooms} Bedrooms` : `${element.number_rooms} Bedroom`
 				let price = `$${element.price_by_night}`
 
 				$('SECTION.places').append(`\
@@ -118,7 +118,7 @@ $(document).ready(function () {
 		$.ajax({
 			type: 'POST',
 			url: 'http://0.0.0.0:5001/api/v1/places_search',
-			data: JSON.stringify({amenities: checked_amenity_ids}),
+			data: JSON.stringify({ amenities: checked_amenity_ids }),
 			contentType: 'application/json',
 			success: function (response) {
 				console.log(response)
