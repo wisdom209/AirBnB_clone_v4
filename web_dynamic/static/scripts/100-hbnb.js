@@ -5,9 +5,9 @@ let checkedAmenityNames = [];
 $(document).ready(function () {
   /* ************************* */
   /* handle amenity check box */
-  const inputs = $('.amenities input[type="checkbox"]');
+  const amenityInputs = $('.amenity_check');
 
-  inputs.each(function (index, input) {
+  amenityInputs.each(function (index, input) {
     $(this).on('change', (e) => {
       const amenityId = e.target.dataset.id;
       const amenityName = e.target.dataset.name;
@@ -104,13 +104,104 @@ $(document).ready(function () {
     }
   });
 
+  /* ************************* */
+  /* handle state check box */
+  let checkedStateIds = [];
+  let checkedStateCityNames = [];
+  const stateInputs = $('.state_check');
+
+  stateInputs.each(function (index, input) {
+    $(this).on('change', (e) => {
+      const stateId = e.target.dataset.id;
+      const stateName = e.target.dataset.name;
+
+      /* add states to list */
+      if (e.target.value === 'on') {
+        if (!(checkedStateIds.includes(stateId))) {
+          checkedStateIds.push(stateId);
+          checkedStateCityNames.push(stateName);
+        }
+      }
+      if (e.target.value === 'off') {
+        if (checkedStateIds.includes(stateId)) {
+          checkedStateIds = checkedStateIds.filter(value => value !== stateId);
+          checkedStateCityNames = checkedStateCityNames.filter(value => value !== stateName);
+        }
+      }
+
+      /* toggle checkbox values */
+      if (e.target.value === 'on') {
+        e.target.value = 'off';
+      } else {
+        e.target.value = 'on';
+      }
+
+      /* update h4 tag */
+      $('.locations h4').html('&nbsp;');
+      let stateCityText = checkedStateCityNames.join(', ');
+      if (checkedStateCityNames.length === 0) {
+        $('.locations h4').html('&nbsp;');
+      } else if (stateCityText.length > 24) {
+        stateCityText = stateCityText.slice(0, 24) + '...';
+        $('.locations h4').text(stateCityText);
+      } else {
+        $('.locations h4').text(stateCityText);
+      }
+    });
+  });
+
+  /* ******************************* */
+  /* handle checkbox for cities */
+  const cityInputs = $('.city_check');
+  let checkedCityIds = [];
+
+  cityInputs.each(function (index, input) {
+    $(this).on('change', (e) => {
+      const cityId = e.target.dataset.id;
+      const cityName = e.target.dataset.name;
+
+      /* add cities to list */
+      if (e.target.value === 'on') {
+        if (!(checkedCityIds.includes(cityId))) {
+          checkedCityIds.push(cityId);
+          checkedStateCityNames.push(cityName);
+        }
+      }
+      if (e.target.value === 'off') {
+        if (checkedCityIds.includes(cityId)) {
+          checkedCityIds = checkedCityIds.filter(value => value !== cityId);
+          checkedStateCityNames = checkedStateCityNames.filter(value => value !== cityName);
+        }
+      }
+
+      /* toggle checkbox values */
+      if (e.target.value === 'on') {
+        e.target.value = 'off';
+      } else {
+        e.target.value = 'on';
+      }
+
+      /* update h4 tag */
+      $('.locations h4').html('&nbsp;');
+      let stateCityText = checkedStateCityNames.join(', ');
+      if (checkedStateCityNames.length === 0) {
+        $('.locations h4').html('&nbsp;');
+      } else if (stateCityText.length > 24) {
+        stateCityText = stateCityText.slice(0, 24) + '...';
+        $('.locations h4').text(stateCityText);
+      } else {
+        $('.locations h4').text(stateCityText);
+      }
+    });
+  });
+
   /* **************************************************** */
   /* Make a post request when the button is clicked */
   $('.filters button').on('click', () => {
     $.ajax({
       type: 'POST',
       url: 'http://0.0.0.0:5001/api/v1/places_search',
-      data: JSON.stringify({ amenities: checkedAmenityIds }),
+      data: JSON.stringify({ amenities: checkedAmenityIds, states: checkedStateIds, cities: checkedCityIds }),
       contentType: 'application/json',
       success: function (response) {
         console.log(response);
