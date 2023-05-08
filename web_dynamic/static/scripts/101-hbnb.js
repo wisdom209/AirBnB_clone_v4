@@ -4,6 +4,7 @@ let checkedAmenityNames = [];
 
 $(document).ready(function () {
   /* *************************** */
+  /* handle date conversion */
   function getDayOrdinalSuffix (day) {
     if (day >= 11 && day <= 13) {
       return 'th';
@@ -137,6 +138,8 @@ $(document).ready(function () {
     });
   };
 
+  /* ****************************** */
+  /* handle amenity check boxes */
   amenityInputs.each(function (index, input) {
     $(this).on('change', (e) => {
       const amenityId = e.target.dataset.id;
