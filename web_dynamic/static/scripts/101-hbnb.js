@@ -3,10 +3,14 @@ let checkedAmenityIds = [];
 let checkedAmenityNames = [];
 
 $(document).ready(function () {
+
 	/* ************************* */
+	/* Wait while page loads */
+	$('SECTION.places').text('Loading . . .');
+	/* ************************* */
+
 	/* handle amenity check box */
 	const amenityInputs = $('.amenity_check');
-
 
 	/* Append reviews to articles*/
 	const appendReviews = async (response) => {
@@ -22,10 +26,29 @@ $(document).ready(function () {
 	/* ******************************* */
 	/* Build the articles html */
 	const buildArticles = (response, hasReview) => {
-		$('SECTION.places').empty();
+
+		$('SPAN.toggle_review').click((e => {
+			e.preventDefault();
+			/* const currText = $('SPAN.toggle_review').text() */
+			const currId = e.target.id;
+			const header = $(`.reviewh_${currId}`)
+			const paragraph = $(`.reviewp_${currId}`)
+
+			if ($(`#${e.target.id}`).text() === "Hide") {
+				header.show()
+				paragraph.show()
+				$(`#${e.target.id}`).text("Show")
+			}
+			else {
+				header.hide()
+				paragraph.hide()
+				$(`#${e.target.id}`).text("Hide")
+			}
+		}))
+
 		$('SECTION.places').text('Loading . . .');
 		$('SECTION.places').empty();
-		response.forEach(element => {
+		response.forEach((element) => {
 			const name = element.name;
 			const desc = element.description;
 			const guests = element.max_guest !== 1 ? `${element.max_guest} Guests` : `${element.max_guest} Guest`;
@@ -52,16 +75,45 @@ $(document).ready(function () {
 
 			if (hasReview === true) {
 				if ('review' in element) {
-					textToAppend = textToAppend + `<div class=reviews data-id=${element.id} > <h2 style="display:inline;">${element.review.length} Reviews </h2> <span class="toggle_review" data-id=${element.id}>Hide</span>`
+					textToAppend = textToAppend + `<div class=reviews > <h2 style="display:inline;">${element.review.length} Reviews </h2> <span id=${element.id} class="toggle_review" data-id=${element.id}>Hide</span>`
+
 					element.review.forEach((data => {
-						textToAppend = textToAppend + `<h3>From Kamie Nean the 6th September 2017</h3><p>${data.text}</p>`
+						textToAppend = textToAppend + `<h3 class="reviewh_${element.id}" >From Kamie Nean the 6th September 2017</h3><p class="reviewp_${element.id}" >${data.text}</p>`
 					}))
 				}
 			}
 			textToAppend = textToAppend + "</div> </article>"
 			$("SECTION.places").append(textToAppend);
 		});
+
+
+		$('SPAN.toggle_review').click((e => {
+			e.preventDefault();
+			/* const currText = $('SPAN.toggle_review').text() */
+			const currId = e.target.id;
+			const header = $(`.reviewh_${currId}`)
+			const paragraph = $(`.reviewp_${currId}`)
+
+			if ($(`#${e.target.id}`).text() === "Hide") {
+				header.hide()
+				paragraph.hide()
+				$(`#${e.target.id}`).text("Show")
+			}
+			else {
+				header.show()
+				paragraph.show()
+				$(`#${e.target.id}`).text("Hide")
+			}
+		}))
 	}
+
+
+	/* *************************** */
+	/* Toggle the review on click hide/show */
+	$('SPAN.toggle_review').click(function (e) {
+		e.preventDefault();
+		alert('span clicked')
+	});
 
 	amenityInputs.each(function (index, input) {
 		$(this).on('change', (e) => {
@@ -244,29 +296,4 @@ $(document).ready(function () {
 			}
 		});
 	});
-
-
-	/* *************************** */
-	/* Toggle the review on click hide/show */
-	$('.toggle_review').on('click', (e) => { 
-		console.log(id)
-		const id = $(e.target).data('id');
-		
-		const $header = $(`#review_${id} h3`);
-		const $body = $(`#review_${id} p`);
-	  
-		if ($('.toggle_review').text() === 'Hide')
-		{
-		  $header.hide();
-		  $body.hide();
-		  $(`.toggle_review[data-id="${id}"]`).text('Show');
-		}
-		else
-		{
-		  $header.show();
-		  $body.show();
-		  $(`.toggle_review[data-id="${id}"]`).text('Hide');
-		}
-	  });
-
 });
