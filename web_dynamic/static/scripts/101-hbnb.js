@@ -7,8 +7,24 @@ $(document).ready(function () {
 	/* handle amenity check box */
 	const amenityInputs = $('.amenity_check');
 
-	const buildArticles = (response) => {
-		$('SECTION.places').text('');
+
+	/* Append reviews to articles*/
+	const appendReviews = async (response) => {
+		for (const element of response) {
+			const place_id = element.id;
+			const data = await $.get(`http://0.0.0.0:5001/api/v1/places/${place_id}/reviews`);
+			element.review = data;
+		}
+		buildArticles(response, true);
+	};
+
+
+	/* ******************************* */
+	/* Build the articles html */
+	const buildArticles = (response, hasReview) => {
+		$('SECTION.places').empty();
+		$('SECTION.places').text('Loading . . .');
+		$('SECTION.places').empty();
 		response.forEach(element => {
 			const name = element.name;
 			const desc = element.description;
@@ -17,24 +33,33 @@ $(document).ready(function () {
 			const rooms = element.number_rooms !== 1 ? `${element.number_rooms} Bedrooms` : `${element.number_rooms} Bedroom`;
 			const price = `$${element.price_by_night}`;
 
-			$('SECTION.places').append(`\
-					  <article>
-					  <div class="title_box">
-					  <h2 style="max-width:75%;">${name}</h2>
-					  <div class="price_by_night">${price}</div>
-					  </div>
-					  <div class="information">
-					  <div class="max_guest">${guests}</div>
-					  <div class="number_rooms">${rooms}</div>
-					  <div class="number_bathrooms">${baths}</div>
-					  </div>
-					  <div class="user">
-					  <b>Owner:</b> John Doe
-					  </div>
-					  <div class="description">
-					  ${desc}
-					  </div>
-					  </article>`);
+			let textToAppend = `<article>
+			<div class="title_box" >
+			<h2 style="max-width:75%;">${name}</h2>
+			<div class="price_by_night">${price}</div>
+			</div >
+			<div class="information">
+			<div class="max_guest">${guests}</div>
+			<div class="number_rooms">${rooms}</div>
+			<div class="number_bathrooms">${baths}</div>
+			</div>
+			<div class="user">
+			<b>Owner:</b> John Doe
+			</div>
+			<div class="description">
+			${desc}
+			</div>`
+
+			if (hasReview === true) {
+				if ('review' in element) {
+					textToAppend = textToAppend + `<div class=reviews data-id=${element.id} > <h2 style="display:inline;">${element.review.length} Reviews </h2> <span class="toggle_review" data-id=${element.id}>Hide</span>`
+					element.review.forEach((data => {
+						textToAppend = textToAppend + `<h3>From Kamie Nean the 6th September 2017</h3><p>${data.text}</p>`
+					}))
+				}
+			}
+			textToAppend = textToAppend + "</div> </article>"
+			$("SECTION.places").append(textToAppend);
 		});
 	}
 
@@ -78,9 +103,9 @@ $(document).ready(function () {
 		});
 	});
 
+
 	/* *************************************** */
 	/* handle http return status */
-
 	const statusElem = $('div#api_status');
 	$.get('http://0.0.0.0:5001/api/v1/status', (res) => {
 		if (res.status === 'OK') {
@@ -92,21 +117,23 @@ $(document).ready(function () {
 		}
 	});
 
+
 	/* *************************************************** */
 	/* Handle places search and update articles from frontend */
-	$('SECTION.places').text('Loading . . .');
 	$.ajax({
 		type: 'POST',
 		url: 'http://0.0.0.0:5001/api/v1/places_search',
-		data: '{}',
+		data: JSON.stringify({}),
 		contentType: 'application/json',
 		success: function (response) {
-			buildArticles(response);
+			appendReviews(response);
 		},
 		error: function (xhr, status, error) {
 			console.log(error);
 		}
 	});
+
+
 
 	/* ************************* */
 	/* handle state check box */
@@ -154,6 +181,7 @@ $(document).ready(function () {
 		});
 	});
 
+
 	/* ******************************* */
 	/* handle checkbox for cities */
 	const cityInputs = $('.city_check');
@@ -199,6 +227,7 @@ $(document).ready(function () {
 		});
 	});
 
+
 	/* **************************************************** */
 	/* Make a post request when the button is clicked */
 	$('.filters button').on('click', () => {
@@ -208,11 +237,36 @@ $(document).ready(function () {
 			data: JSON.stringify({ amenities: checkedAmenityIds, states: checkedStateIds, cities: checkedCityIds }),
 			contentType: 'application/json',
 			success: function (response) {
-				buildArticles(response);
+				appendReviews(response);
 			},
 			error: function (xhr, status, error) {
 				console.log(error);
 			}
 		});
 	});
+
+
+	/* *************************** */
+	/* Toggle the review on click hide/show */
+	$('.toggle_review').on('click', (e) => { 
+		console.log(id)
+		const id = $(e.target).data('id');
+		
+		const $header = $(`#review_${id} h3`);
+		const $body = $(`#review_${id} p`);
+	  
+		if ($('.toggle_review').text() === 'Hide')
+		{
+		  $header.hide();
+		  $body.hide();
+		  $(`.toggle_review[data-id="${id}"]`).text('Show');
+		}
+		else
+		{
+		  $header.show();
+		  $body.show();
+		  $(`.toggle_review[data-id="${id}"]`).text('Hide');
+		}
+	  });
+
 });

@@ -46,9 +46,10 @@
 .title_box h2 {
     text-align: left;
     margin: 25px 3% 40px 2%;
-    max-width: 75%;
-    word-wrap: break-word;
+    width: 75%;
+    word-wrap: break-work;
 }
+
 .price_by_night {
     display: flex;
     height: 60px;
@@ -61,6 +62,7 @@
     border-radius: 50%;
     align-items: center;
     padding: 2.3%;
+	margin-left: 10px;
 }
 
 .information {
@@ -98,4 +100,25 @@
 
 .user {
   margin-bottom: 1.5%;
+}
+
+.reviews {
+ margin-top: 10px;
+ text-align: left;
+}
+
+.reviews li, .reviews ul {
+	list-style: none;
+	margin-left:  0;
+}
+
+.reviews h2, .reviews h3, .reviews p {
+  margin-left:  0;
+  padding-left: 0;
+  text-align: left;
+}
+
+.toggle_review{
+	float: right;
+	margin-left: 10px;
 }
